@@ -73,7 +73,7 @@
   height: 400px;
   margin: 50px 80px;
   text-align: center;
-  background-color: aliceblue;
+  background-color: rgba(240, 248, 255, 0.534);
 }
 * body main .container .card img {
   width: 100%;
