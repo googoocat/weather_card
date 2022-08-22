@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./CSS/weather.css">
+    <title>天氣預報</title>
+
+
+</head>
+<body>
+    <nav>
+        <div class="btn radius" onclick="filter('all')">全臺</div>
+        <div class="btn radius" onclick="filter('north')">北部地區</div>
+        <div class="btn radius" onclick="filter('central')">中部地區</div>
+        <div class="btn radius" onclick="filter('south')">南部地區</div>
+        <div class="btn radius" onclick="filter('east')">東部地區</div>
+        <div class="btn radius" onclick="filter('island')">離島地區</div>
+    </nav>
+    <main>
+        <div class="container">
+            <!-- <div class="card radius">
+                <img src="./img/cloud.gif" alt="" class="radius">
+                <h2>縣市</h2>
+                <p>溫度</p>
+                <p>天氣概述:<span>熱爆</span></p>
+            </div>  -->
+        </div>
+    </main>
+
+
+    <script>
+
+        let cardArea = document.querySelector('.container') ;
+        function filter(region) {
+            cardArea.innerHTML = ''; //清空,否則會疊加,檢索會失效
+            let region_num;//先把索引值做成矩陣,並將其分類
+            if(region == 'north'){
+                region_num = [1,3,4,5,7,13,18];
+            }else if(region == 'central'){
+                region_num = [8,9,11,14,20];
+            }else if(region == 'south'){
+                region_num = [0,2,6,15,17];
+            }else if(region == 'east'){
+                region_num = [10,12];
+            }else if (region == 'island'){
+                region_num = [16,19,21];
+            }else{ //all
+                region_num =[1,3,4,5,7,13,18,8,9,11,14,20,0,2,6,15,17,10,12,16,19,21];
+                //這樣才會照目前自己分類的北中南順序而不是原本伺服端編碼的順序
+            }
+            // 這些數字其實就是下面data.records.locaion的i 共0-21,將其分類做成小陣列~
+        
+          
+            // console.log(region_num);
+            fetch ('https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-AA300EC1-31BA-465E-B669-6CA2C320A195')//發送抓取資料的請求
+                .then (function (response) {//回傳資料打包成response
+                    // console.log(response);
+                    return response.json();//利用json()翻譯response,塞進data
+                })
+                .then(function (data) {//就是物件資料庫惹 可以開抓
+                    // console.log(data);
+                    let img;//定義圖片變數名字
+
+                    //使用for迴圈生成天氣卡片
+                    for (let i = 0; i < region_num.length; i++) {
+                        // console.log(data.records.location[region_num[i]]);
+                        // console.log(region_num);
+                    // console.log(data.records.locaion);//縣市
+
+                    var cityname = data.records.location[region_num[i]].locationName;
+                    //location[region_num[i]] 其實就是location[i],然後再把原本裡面的i做成陣列
+                    // console.log(data.records.location[region_num[i]].weatherElement[4].time[0].parameter.parameterName);//最高溫度
+                    var MAXT = data.records.location[region_num[i]].weatherElement[4].time[0].parameter.parameterName; 
+                    // console.log(data.records.location[region_num[i]].weatherElement[2].time[0].parameter.parameterName);//最低溫度
+                    var MINT = data.records.location[region_num[i]].weatherElement[2].time[0].parameter.parameterName
+                    // console.log(data.records.location[region_num[i]].weatherElement[0].time[0].parameter.parameterName);//天氣描述
+                    var Wx = data.records.location[region_num[i]].weatherElement[0].time[0].parameter.parameterName;
+
+                    //晴時多雲  
+                    //多雲時晴
+                    //晴午後短暫雷陣雨
+                    //多雲 
+
+                    if (Wx.includes('雷')) {
+                        img='./img/Weatherheavyrain.gif';//晴午後短暫雷陣雨
+                    }else if(Wx.includes('雲',3)){  //可估狗string includes
+                        img='./img/suncloud.gif';//晴時多雲  
+                    }else if(Wx.includes('晴',3)){
+                        img='./img/cloudysun.gif';//多雲時晴
+                    }
+                    else if(Wx.includes('晴')){
+                        img='./img/sun.gif';
+                    }else if(Wx.includes('雲')){
+                        img='./img/cloud.gif';//多雲
+                    }else{
+                        img='./img/rain.gif';
+                    }
+                    
+                    cardArea.innerHTML +=`
+                    <div class="card radius">
+                        <img src="${img}" alt="" class="radius">
+                        <h1>${cityname}</h1>
+                        <p>最高溫度:${MAXT}°C , 最低溫度:${MINT}°C</p>
+                        <p>${Wx}</p>
+                    </div> 
+                    `;
+                    
+                }     
+
+                //填空卡片:使其4個一排並對齊左邊
+                for(let i = 0; i < 4; i++){
+                    cardArea.innerHTML += `
+                            <div class="fill-card"></div> 
+                        `;
+                    }      
+
+            });
+            }
+            
+          
+            filter();//呼叫使其載入
+
+            //找一下gif動圖
+
+        //是非同步資料,做自己的事情
+        // fetch ('網址',參數<我的要求:要哪些資料-但需要知道接口要什麼資料,提供資料的伺服器定義好的>)//發送抓取資料的請求
+        //     .then (function (promise) {//回傳資料打包成promise
+        //         console.log(promise);
+        //         return  promise.json();//利用json()翻譯promise,塞進data
+        //     })
+        //     .then(function (data) {//就是物件資料庫惹 可以開抓
+        //         console.log(data);
+                
+        //     })
+
+
+    </script>
+    
+</body>
+</html>
