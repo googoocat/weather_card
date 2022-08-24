@@ -19,7 +19,7 @@
         nav {
             width: 100%;
             height: 100px;
-            background-color: rgba(112, 128, 144, 0.548);
+            // background-color: rgba(112, 128, 144, 0.548);
             // border: 1px solid #000;
             display: flex;
             justify-content: space-evenly;
@@ -41,15 +41,13 @@
                 text-align: center;
                 white-space: nowrap;
                 color: rgb(255, 255, 255);
-                background-color: darkcyan;
-                border-radius: 5px;
+                border: 2px solid #FFf;
                 transition: 0.3s;
                 cursor: pointer;
 
                 &:hover {
-                    color: rgb(25, 41, 41);
-                    background-color: darkseagreen;
-                    border: 2px solid aliceblue;
+                    color: rgb(3, 41, 16);
+                    border: 2px solid rgb(3, 41, 16);
                     border-radius: 20px;
                     transition: 0.3s;
                 }
@@ -84,7 +82,7 @@
                     // border: 1px solid #000;
                     margin: 50px 80px;
                     text-align: center;
-                    background-color: rgba(240, 248, 255, 0.534);
+                    background-color: aliceblue;
 
 
                     img {
